@@ -28,8 +28,11 @@
 
     cameraManager.onframe = function() {
       // There is a frame in the camera, what should we do with it?
- 
+      
+      //Each time a frame is fired, we take the image data (from the canvas)
       var imageData = cameraManager.getImageData();
+
+      //Then we detect the qrcode
       var detectedQRCode = qrCodeManager.detectQRCode(imageData, function(url) {
         if(url !== undefined) {
           qrCodeManager.showDialog(url);
@@ -54,9 +57,9 @@
 
 
     this.detectQRCode = function(imageData, callback) {
-      callback = callback || function() {};
-
+      callback = callback || function() {}; 
       client.decode(imageData, function(result) {
+        console.log('something')
         if(result !== undefined) {
           self.currentUrl = result;
         }
@@ -90,7 +93,7 @@
   var CameraManager = function(element) {
     // The camera gets a video stream, and adds it to a canvas.
     // The canvas is analysed but also displayed to the user.
-    // The video is never show
+    // The video is never shown
 
     var self = this;
 
@@ -183,6 +186,7 @@
     var captureFrame = function() {
 
       // Work out which part of the video to capture and apply to canvas.
+      requestAnimationFrame(captureFrame);
       canvas.drawImage(cameraVideo, sx /scaleFactor, sy/scaleFactor, sWidth/scaleFactor, sHeight/scaleFactor, dx, dy, dWidth, dHeight);
 
       drawOverlay(dWidth, dHeight, scaleFactor);
@@ -221,15 +225,14 @@
           
           var isSetup = setupVariables(e);
           if(isSetup) {
-            setInterval(captureFrame.bind(self), 4);
+            requestAnimationFrame(captureFrame.bind(self));
           }
           else {
             // This is just to get around the fact that the videoWidth is not
             // available in Firefox until sometime after the data has loaded.
             setTimeout(function() {
               setupVariables(e);
-
-              setInterval(captureFrame.bind(self), 4);
+              requestAnimationFrame(captureFrame.bind(self));
             }, 100);
           }
 

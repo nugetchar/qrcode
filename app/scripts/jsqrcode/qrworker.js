@@ -27,6 +27,7 @@ self.onmessage = function(e) {
     postMessage(result);
   } 
   catch(e) {
+    //self.close();
     postMessage(undefined);
   }
 

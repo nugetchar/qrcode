@@ -1,17 +1,12 @@
 var QRClient = function() {
-
   var currentCallback;
-  
+  var worker = new Worker('./scripts/jsqrcode/qrworker.js');
+  worker.addEventListener('message', function(e){
+    currentCallback(e.data);
+    //worker.terminate();
+  }, false);
   this.decode = function(imageData, callback) {
-    try {
-      var width = imageData.width;
-      var height = imageData.height;
-      var result = qrcode.decode(width, height, imageData);
-      callback(result);
-    } 
-    catch(e) {
-      // consume the error.
-      console.log(e)
-    }
+    currentCallback = currentCallback || callback;
+    worker.postMessage(imageData);
   };
  };
